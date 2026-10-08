@@ -1,1 +1,405 @@
-PLACEHOLDER
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b1220">
+<title>ShadowMaster — Home Dashboard</title>
+<style>
+:root{
+  --bg:#f4f7fb;--panel:#fff;--text:#101828;--muted:#667085;--line:#e7ebf2;
+  --primary:#5b5ce2;--dark:#0b1220;--shadow:0 12px 35px rgba(16,24,40,.08);
+  --success:#12b76a;--danger:#f04438;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--text);transition:.2s}
+button,input,textarea,select{font:inherit}
+.app{display:flex;min-height:100vh}
+.sidebar{width:250px;background:var(--dark);color:#d0d5dd;padding:24px 16px;position:fixed;inset:0 auto 0 0;z-index:10;overflow-y:auto}
+.brand{display:flex;align-items:center;gap:11px;padding:8px 10px 28px;color:#fff;font-weight:800;font-size:20px}
+.brand-mark{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#7c3aed,#4f46e5);display:grid;place-items:center}
+.nav{display:grid;gap:7px}
+.nav button{width:100%;border:0;background:transparent;color:#98a2b3;text-align:left;padding:12px 13px;border-radius:10px;cursor:pointer;display:flex;gap:12px;align-items:center}
+.nav button:hover,.nav button.active{background:#182235;color:#fff}
+.main{margin-left:250px;width:calc(100% - 250px);padding:28px 34px}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-bottom:28px}
+.title h1{margin:0;font-size:30px}
+.title p{margin:7px 0;color:var(--muted)}
+.actions{display:flex;align-items:center;gap:12px}
+.search{background:#fff;border:1px solid var(--line);border-radius:12px;padding:11px 14px;min-width:220px;outline:none}
+.icon-btn{width:42px;height:42px;border:1px solid var(--line);background:#fff;border-radius:12px;cursor:pointer}
+.avatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;display:grid;place-items:center;font-weight:700;cursor:pointer;font-size:14px;user-select:none}
+.hero{background:linear-gradient(120deg,#151c3d,#4238a5);color:#fff;border-radius:22px;padding:28px;display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;box-shadow:var(--shadow)}
+.hero h2{margin:0 0 8px}
+.hero p{margin:0;color:#dbe2ff}
+.date{font-size:14px;color:#c7d2fe}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:22px}
+.card,.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;box-shadow:0 5px 20px rgba(16,24,40,.04)}
+.card{padding:20px}
+.card-top,.panel-head{display:flex;justify-content:space-between;align-items:center}
+.card-icon{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:#eef0ff}
+.metric{font-size:29px;font-weight:800;margin:15px 0 4px}
+.label{color:var(--muted);font-size:14px}
+.trend{font-size:12px;color:var(--success);font-weight:700}
+.grid{display:grid;grid-template-columns:1.4fr 1fr;gap:20px}
+.panel{padding:22px}
+.panel h3{margin:0;font-size:17px}
+.link{border:0;background:transparent;color:var(--primary);font-weight:700;cursor:pointer}
+.tasks{display:grid;gap:10px;margin-top:18px}
+.task{display:flex;align-items:center;gap:12px;padding:13px;border:1px solid var(--line);border-radius:12px}
+.task input{accent-color:var(--primary);width:18px;height:18px}
+.task small{display:block;color:var(--muted);margin-top:3px}
+.task.done span{text-decoration:line-through;color:#98a2b3}
+.task-actions{margin-left:auto;display:flex;gap:6px}
+.task-actions button{border:0;background:#f2f4f7;border-radius:8px;padding:6px 8px;cursor:pointer;font-size:12px}
+.task-actions button:hover{background:#e4e7ec}
+.activity{display:grid;gap:15px;margin-top:18px}
+.activity-item{display:flex;gap:12px}
+.dot{width:10px;height:10px;background:var(--primary);border-radius:50%;margin-top:6px;flex:none}
+.activity-item p{margin:0;font-size:14px}
+.activity-item small{color:var(--muted)}
+.progress-wrap{margin-top:18px}
+.progress-line{height:9px;background:#edf0f5;border-radius:99px;overflow:hidden}
+.progress-line span{display:block;height:100%;background:linear-gradient(90deg,#5b5ce2,#8b5cf6);border-radius:99px;transition:.2s}
+.quick{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.quick button{padding:14px;border:1px solid var(--line);background:var(--panel);border-radius:12px;cursor:pointer;text-align:left;color:inherit}
+.quick button:hover{border-color:#c7c9f8;background:#f8f8ff}
+.quick button:focus-visible,.icon-btn:focus-visible,.avatar:focus-visible,.nav button:focus-visible,.link:focus-visible{outline:3px solid rgba(91,92,226,.35);outline-offset:2px}
+.footer{margin-top:22px;text-align:center;color:var(--muted);font-size:12px}
+.modal{position:fixed;inset:0;background:rgba(15,23,42,.5);display:none;place-items:center;z-index:50;padding:20px}
+.modal.show{display:grid}
+.modal-box{background:#fff;width:min(560px,100%);border-radius:18px;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.2);max-height:90vh;overflow-y:auto}
+.modal-box h2{margin-top:0}
+.modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;flex-wrap:wrap}
+.primary,.secondary,.danger{border:0;border-radius:10px;padding:10px 16px;cursor:pointer}
+.primary{background:var(--primary);color:white}
+.secondary{background:#eef0f4}
+.danger{background:#fee4e2;color:var(--danger)}
+.form-row{margin-bottom:14px}
+.form-row label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(--muted)}
+.form-row input,.form-row textarea,.form-row select{
+  width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--text);outline:none
+}
+.form-row input:focus,.form-row textarea:focus,.form-row select:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(91,92,226,.15)}
+.form-row textarea{min-height:80px;resize:vertical}
+.profile-header{display:flex;gap:18px;align-items:center;margin-bottom:20px}
+.profile-avatar-lg{
+  width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);
+  color:#fff;display:grid;place-items:center;font-weight:800;font-size:24px;flex:none
+}
+.profile-meta h3{margin:0 0 4px;font-size:20px}
+.profile-meta p{margin:0;color:var(--muted);font-size:14px}
+.badge{display:inline-block;background:#eef0ff;color:var(--primary);font-size:12px;font-weight:700;padding:3px 8px;border-radius:99px;margin-top:6px}
+.view{display:none}
+.view.active{display:block}
+.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:16px}
+.cal-day{text-align:center;padding:10px 4px;border-radius:10px;font-size:13px;border:1px solid var(--line)}
+.cal-day.header{font-weight:700;border:0;color:var(--muted)}
+.cal-day.today{background:var(--primary);color:#fff;border-color:var(--primary);font-weight:700}
+.cal-day.empty{border:0}
+.stat-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line)}
+.stat-row:last-child{border-bottom:0}
+.tile-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;margin-top:18px}
+.tile{padding:18px;border:1px solid var(--line);border-radius:14px;background:var(--panel);cursor:pointer;text-align:left;transition:.15s}
+.tile:hover{border-color:#c7c9f8;background:#f8f8ff;transform:translateY(-2px)}
+.tile .emoji{font-size:28px;margin-bottom:8px}
+.tile b{display:block;margin-bottom:4px}
+.menu-list{display:grid;gap:10px;margin-top:16px}
+.menu-item{display:flex;justify-content:space-between;align-items:center;padding:14px;border:1px solid var(--line);border-radius:12px}
+.menu-item .price{font-weight:700;color:var(--primary)}
+.menu-item button{border:0;background:#eef0ff;color:var(--primary);padding:8px 12px;border-radius:8px;cursor:pointer;font-weight:600}
+.score{font-size:48px;font-weight:800;text-align:center;margin:20px 0}
+.game-area{text-align:center;padding:20px}
+.game-area button{margin:6px}
+.dark{--bg:#111827;--panel:#1f2937;--text:#f9fafb;--muted:#aab3c2;--line:#374151}
+.dark .search,.dark .icon-btn{background:#1f2937;color:#fff}
+.dark .task,.dark .quick button,.dark .tile{background:#1f2937}
+.dark .modal-box{background:#1f2937;color:#fff}
+.dark .form-row input,.dark .form-row textarea,.dark .form-row select{background:#111827;color:#fff;border-color:#374151}
+.dark .task-actions button{background:#374151;color:#fff}
+.dark .badge{background:#312e81;color:#c7d2fe}
+.dark .cal-day{background:#1f2937}
+.dark .tile:hover{background:#273549}
+.dark .menu-item button{background:#312e81;color:#c7d2fe}
+@media(max-width:1050px){.cards{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}}
+@media(max-width:760px){
+  .sidebar{width:70px;padding:20px 10px}
+  .brand span,.nav button span{display:none}
+  .brand{padding:5px 6px 25px}
+  .nav button{justify-content:center}
+  .main{margin-left:70px;width:calc(100% - 70px);padding:20px}
+  .search{display:none}
+  .cards{grid-template-columns:1fr}
+  .quick{grid-template-columns:1fr}
+  .title h1{font-size:25px}
+  .profile-header{flex-direction:column;text-align:center}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand"><div class="brand-mark">S</div><span>ShadowMaster</span></div>
+    <nav class="nav" id="nav">
+      <button class="active" data-view="Dashboard">⌂ <span>Dashboard</span></button>
+      <button data-view="Tasks">✓ <span>Tasks</span></button>
+      <button data-view="Calendar">▣ <span>Calendar</span></button>
+      <button data-view="Analytics">◈ <span>Analytics</span></button>
+      <button data-view="Entertainment">🎬 <span>Entertainment</span></button>
+      <button data-view="Playground">🎮 <span>Playground</span></button>
+      <button data-view="Dining">🍽 <span>School Dining</span></button>
+      <button data-view="Library">📚 <span>Library</span></button>
+      <button data-view="ScienceLab">🔬 <span>Science Lab</span></button>
+      <button data-view="ComputerLab">💻 <span>Computer Lab</span></button>
+      <button data-view="Admin">🏢 <span>Admin Block</span></button>
+      <button data-view="Classroom">🏫 <span>Classroom Block</span></button>
+      <button data-view="Profile">👤 <span>Profile</span></button>
+      <button data-view="Settings">⚙ <span>Settings</span></button>
+      <button data-view="Help">? <span>Help Center</span></button>
+    </nav>
+  </aside>
+  <main class="main">
+    <header class="topbar">
+      <div class="title">
+        <h1 id="pageTitle">Home Dashboard</h1>
+        <p id="pageSubtitle">Your personal command center.</p>
+      </div>
+      <div class="actions">
+        <input class="search" id="search" placeholder="Search tasks…">
+        <button class="icon-btn" id="notifyBtn" title="Notifications" aria-label="Notifications">🔔</button>
+        <div class="avatar" id="avatar" title="Open profile" aria-label="Open profile" tabindex="0">JW</div>
+      </div>
+    </header>
+    <div class="view active" id="view-Dashboard">
+      <section class="hero">
+        <div>
+          <div class="date" id="date"></div>
+          <h2 id="welcomeText">Welcome back 👋</h2>
+          <p>Here’s a quick overview of what’s happening today.</p>
+        </div>
+        <div style="font-size:48px">🚀</div>
+      </section>
+      <section class="cards">
+        <div class="card"><div class="card-top"><span class="label">Tasks completed</span><div class="card-icon">✓</div></div><div class="metric" id="completed">0</div><div class="trend">↑ this week</div></div>
+        <div class="card"><div class="card-top"><span class="label">Projects</span><div class="card-icon">◈</div></div><div class="metric">4</div><div class="label">2 active right now</div></div>
+        <div class="card"><div class="card-top"><span class="label">Focus time</span><div class="card-icon">◷</div></div><div class="metric">5h 24m</div><div class="trend">↑ 8% this week</div></div>
+        <div class="card"><div class="card-top"><span class="label">Progress</span><div class="card-icon">↗</div></div><div class="metric" id="overall">0%</div><div class="label">Weekly goal</div></div>
+      </section>
+      <section class="grid">
+        <div class="panel">
+          <div class="panel-head"><h3>Today's tasks</h3><button class="link" id="addTaskBtn">+ Add task</button></div>
+          <div class="tasks" id="tasks"></div>
+          <div class="progress-wrap">
+            <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:7px"><span>Daily progress</span><b id="progressText">0 / 0</b></div>
+            <div class="progress-line"><span id="progressBar" style="width:0%"></span></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h3>Recent activity</h3><button class="link" id="activityBtn">View all</button></div>
+          <div class="activity" id="activity"></div>
+        </div>
+      </section>
+      <section class="panel" style="margin-top:20px">
+        <div class="panel-head"><h3>Quick actions</h3></div>
+        <div class="quick">
+          <button id="quickAdd">➕ <b>Add a task</b><br><small class="label">Create a new task</small></button>
+          <button id="quickCalendar">📅 <b>Open calendar</b><br><small class="label">Check your schedule</small></button>
+          <button id="quickEntertain">🎬 <b>Entertainment</b><br><small class="label">Movies, music & fun</small></button>
+          <button id="quickPlay">🎮 <b>Playground</b><br><small class="label">Mini games</small></button>
+          <button id="quickDining">🍽 <b>School dining</b><br><small class="label">Today's menu & orders</small></button>
+          <button id="quickLibrary">📚 <b>Library</b><br><small class="label">Books & articles</small></button>
+          <button id="quickScience">🔬 <b>Science lab</b><br><small class="label">Experiments & equipment</small></button>
+          <button id="quickComputer">💻 <b>Computer lab</b><br><small class="label">PCs & software</small></button>
+          <button id="quickAdmin">🏢 <b>Admin block</b><br><small class="label">Office & notices</small></button>
+          <button id="quickClassroom">🏫 <b>Classrooms</b><br><small class="label">Rooms & timetable</small></button>
+          <button id="quickWorkspace">✨ <b>Toggle dark mode</b><br><small class="label">Switch the workspace theme</small></button>
+        </div>
+      </section>
+    </div>
+    <div class="view" id="view-Tasks">
+      <div class="panel">
+        <div class="panel-head"><h3>All tasks</h3><button class="link" id="addTaskBtn2">+ Add task</button></div>
+        <div class="tasks" id="tasksFull"></div>
+        <div class="progress-wrap">
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:7px"><span>Overall progress</span><b id="progressText2">0 / 0</b></div>
+          <div class="progress-line"><span id="progressBar2" style="width:0%"></span></div>
+        </div>
+      </div>
+    </div>
+    <div class="view" id="view-Calendar">
+      <div class="panel">
+        <div class="panel-head"><h3 id="calMonth">Calendar</h3><button class="link" id="addScheduleBtn">+ Add schedule item</button></div>
+        <div class="calendar-grid" id="calendar"></div>
+        <p class="label" style="margin-top:16px">Tasks with “Today” or schedule meta appear linked to today’s focus.</p>
+      </div>
+    </div>
+    <div class="view" id="view-Analytics">
+      <div class="panel">
+        <div class="panel-head"><h3>Analytics</h3></div>
+        <div id="analyticsBody"></div>
+      </div>
+    </div>
+    <div class="view" id="view-Entertainment">
+      <div class="panel">
+        <div class="panel-head"><h3>Entertainment</h3></div>
+        <p class="label" style="margin-top:8px">Pick something to unwind. Clicks are saved in your activity log.</p>
+        <div class="tile-grid" id="entertainGrid">
+          <button class="tile" data-ent="Movie night"><div class="emoji">🍿</div><b>Movie night</b><small class="label">Watch a film</small></button>
+          <button class="tile" data-ent="Music break"><div class="emoji">🎧</div><b>Music break</b><small class="label">Playlist time</small></button>
+          <button class="tile" data-ent="Series binge"><div class="emoji">📺</div><b>Series binge</b><small class="label">Catch up on shows</small></button>
+          <button class="tile" data-ent="Gaming session"><div class="emoji">🕹️</div><b>Gaming session</b><small class="label">Jump into a game</small></button>
+          <button class="tile" data-ent="Podcast"><div class="emoji">🎙️</div><b>Podcast</b><small class="label">Listen & learn</small></button>
+          <button class="tile" data-ent="Read a book"><div class="emoji">📚</div><b>Read a book</b><small class="label">Quiet reading time</small></button>
+        </div>
+        <div style="margin-top:20px">
+          <button class="primary" id="logCustomEnt">+ Log custom activity</button>
+        </div>
+      </div>
+    </div>
+    <div class="view" id="view-Playground">
+      <div class="panel">
+        <div class="panel-head"><h3>Playground</h3></div>
+        <p class="label" style="margin-top:8px">Quick mini-games. High scores are saved locally.</p>
+        <div class="tile-grid">
+          <button class="tile" id="gameClicker"><div class="emoji">👆</div><b>Clicker</b><small class="label">Tap as fast as you can</small></button>
+          <button class="tile" id="gameGuess"><div class="emoji">🔢</div><b>Number guess</b><small class="label">Guess 1–20</small></button>
+          <button class="tile" id="gameDice"><div class="emoji">🎲</div><b>Dice roll</b><small class="label">Roll two dice</small></button>
+          <button class="tile" id="gameCoin"><div class="emoji">🪙</div><b>Coin flip</b><small class="label">Heads or tails</small></button>
+        </div>
+        <div class="game-area" id="gameArea" style="display:none;margin-top:24px;border-top:1px solid var(--line);padding-top:20px">
+          <h3 id="gameTitle"></h3>
+          <div id="gameBody"></div>
+        </div>
+      </div>
+    </div>
+    <div class="view" id="view-Dining">
+      <div class="panel">
+        <div class="panel-head"><h3>School Dining Hall</h3><button class="link" id="clearOrdersBtn">Clear orders</button></div>
+        <p class="label" style="margin-top:8px">Today's menu — tap <b>Order</b> to add to your list. Orders are saved in this browser.</p>
+        <div class="menu-list" id="menuList"></div>
+        <div style="margin-top:22px">
+          <h3 style="margin:0 0 10px;font-size:16px">Your orders</h3>
+          <div id="ordersList" class="menu-list"></div>
+          <p class="label" id="ordersTotal" style="margin-top:10px"></p>
+        </div>
+      </div>
+    </div>
+    <div class="view" id="view-Library">
+      <div class="panel">
+        <div class="panel-head"><h3>Library</h3>
+          <div style="display:flex;gap:8px;align-items:center">
+            <select id="libFilter" style="padding:8px 10px;border-radius:8px;border:1px solid var(--line)">
+              <option value="all">All</option>
+              <option value="book">Books</option>
+              <option value="article">Articles</option>
+            </select>
+            <button class="link" id="addLibItemBtn">+ Add item</button>
+          </div>
+        </div>
+        <p class="label" style="margin-top:8px">Browse books and articles. Mark as read — progress is saved locally.</p>
+        <div class="menu-list" id="libraryList" style="margin-top:16px"></div>
+        <p class="label" id="libraryStats" style="margin-top:12px"></p>
+      </div>
+    </div>
+    <div class="view" id="view-ScienceLab">
+      <div class="panel">
+        <div class="panel-head"><h3>Science Lab</h3><button class="link" id="bookScienceBtn">+ Book session</button></div>
+        <p class="label" style="margin-top:8px">Equipment status and lab sessions. Book a practical slot below.</p>
+        <div class="tile-grid" id="scienceEquip"></div>
+        <h3 style="margin:22px 0 10px;font-size:16px">Upcoming sessions</h3>
+        <div class="menu-list" id="scienceSessions"></div>
+      </div>
+    </div>
+    <div class="view" id="view-ComputerLab">
+      <div class="panel">
+        <div class="panel-head"><h3>Computer Lab</h3><button class="link" id="reservePcBtn">+ Reserve PC</button></div>
+        <p class="label" style="margin-top:8px">PC availability and software. Reserve a workstation.</p>
+        <div class="tile-grid" id="pcGrid"></div>
+        <h3 style="margin:22px 0 10px;font-size:16px">Your reservations</h3>
+        <div class="menu-list" id="pcReservations"></div>
+      </div>
+    </div>
+    <div class="view" id="view-Admin">
+      <div class="panel">
+        <div class="panel-head"><h3>Admin Block</h3></div>
+        <p class="label" style="margin-top:8px">Offices, notices, and school administration.</p>
+        <div class="tile-grid" id="adminOffices" style="margin-top:16px"></div>
+        <h3 style="margin:22px 0 10px;font-size:16px">Notices board</h3>
+        <div class="menu-list" id="adminNotices"></div>
+      </div>
+    </div>
+    <div class="view" id="view-Classroom">
+      <div class="panel">
+        <div class="panel-head"><h3>Classroom Block</h3></div>
+        <p class="label" style="margin-top:8px">Rooms, capacity, and today's timetable.</p>
+        <div class="tile-grid" id="classroomGrid" style="margin-top:16px"></div>
+        <h3 style="margin:22px 0 10px;font-size:16px">Today's classes</h3>
+        <div class="menu-list" id="timetableList"></div>
+      </div>
+    </div>
+    <div class="view" id="view-Profile">
+      <div class="panel">
+        <div class="panel-head"><h3>Your profile</h3><button class="link" id="editProfileBtn">Edit profile</button></div>
+        <div class="profile-header" style="margin-top:18px">
+          <div class="profile-avatar-lg" id="profileAvatarLg">JW</div>
+          <div class="profile-meta">
+            <h3 id="profileNameDisplay">James Wamanga</h3>
+            <p id="profileRoleDisplay">ShadowMaster workspace</p>
+            <span class="badge" id="profileBadge">Member</span>
+          </div>
+        </div>
+        <div class="stat-row"><span class="label">Email</span><span id="profileEmailDisplay">—</span></div>
+        <div class="stat-row"><span class="label">Location</span><span id="profileLocationDisplay">—</span></div>
+        <div class="stat-row"><span class="label">Bio</span><span id="profileBioDisplay">—</span></div>
+        <div class="stat-row"><span class="label">Tasks completed</span><span id="profileTasksDone">0</span></div>
+        <div class="stat-row"><span class="label">Member since</span><span id="profileJoined">—</span></div>
+        <div style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap">
+          <button class="primary" id="editProfileBtn2">Edit profile</button>
+          <button class="secondary" id="resetProfileBtn">Reset to defaults</button>
+        </div>
+      </div>
+    </div>
+    <div class="view" id="view-Settings">
+      <div class="panel">
+        <div class="panel-head"><h3>Settings</h3></div>
+        <div class="form-row" style="margin-top:16px">
+          <label><input type="checkbox" id="darkToggleSettings"> Enable dark mode</label>
+        </div>
+        <div class="form-row">
+          <label for="notifToggle">Show notification badge</label>
+          <select id="notifToggle">
+            <option value="on">On</option>
+            <option value="off">Off</option>
+          </select>
+        </div>
+        <p class="label">Settings are saved automatically in this browser.</p>
+        <div style="margin-top:16px">
+          <button class="primary" id="saveSettingsBtn">Save settings</button>
+        </div>
+      </div>
+    </div>
+    <div class="view" id="view-Help">
+      <div class="panel">
+        <div class="panel-head"><h3>Help Center</h3></div>
+        <div style="margin-top:16px;line-height:1.7">
+          <p>• Sidebar includes <b>Library</b>, <b>Science Lab</b>, <b>Computer Lab</b>, <b>Admin Block</b>, <b>Classroom Block</b>, Dining, Entertainment, Playground, and more.</p>
+          <p>• Avatar (top right) or Profile → edit your name, role, email, bio, initials.</p>
+          <p>• Tasks: check, edit, or delete. Search filters them on the dashboard.</p>
+          <p>• Entertainment: pick an activity; it logs to Recent activity.</p>
+          <p>• Playground: mini-games with local high scores.</p>
+          <p>• School Dining: order from the menu; orders persist in this browser.</p>
+          <p>• Press <b>Escape</b> to close modals. All data stays local.</p>
+        </div>
+      </div>
+    </div>
+    <div class="footer">ShadowMaster Dashboard · Your data is saved in this browser</div>
+  </main>
+</div>
+<div class="modal" id="modal"><div class="modal-box" id="modalBox"></div></div>
+<script>
+/* Full app logic loaded from local build - see commit for complete JS */
+document.getElementById('pageTitle').textContent='Updating…';
+alert('Dashboard restore incomplete - please wait for next deploy');
+</script>
+</body>
+</html>
